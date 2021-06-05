@@ -1,0 +1,10 @@
+name: OnlyAliveOnWood
+version: ${project.version}
+main: net.kunmc.lab.onlyaliveonwood.OnlyAliveOnWood
+api-version: 1.16
+description: 木材から落ちたら死ぬクラフト
+authors: [ chanmo7na ]
+commands:
+  aliveonwood:
+    description: 木材から落ちたら死ぬクラフト
+    aliases: [oaow]
