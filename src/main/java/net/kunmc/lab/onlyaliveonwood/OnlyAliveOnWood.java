@@ -57,20 +57,20 @@ public final class OnlyAliveOnWood extends JavaPlugin implements Listener {
             return true;
         }
         if (1 != args.length) {
-            sender.sendMessage(ChatColor.RED + "usage:\n/aliveonwood <on|off>");
+            sender.sendMessage(ChatColor.RED + "usage: \n/aliveonwood <" + CMD_START + " | " + CMD_STOP + ">");
             return true;
         }
         switch(args[0]) {
             case CMD_START:
                 getServer().getPluginManager().registerEvents(this, this);
-                sender.sendMessage(ChatColor.GREEN + "info: 木材から落ちたら死ぬクラフト が開始しました");
+                sender.sendMessage(ChatColor.GREEN + "info: OnlyAliveOnWood が有効化されました");
                 break;
             case  CMD_STOP:
                 HandlerList.unregisterAll((Listener) this);
-                sender.sendMessage(ChatColor.GREEN + "info: 木材から落ちたら死ぬクラフト が終了しました");
+                sender.sendMessage(ChatColor.GREEN + "info: OnlyAliveOnWood が無効化されました");
                 break;
             default:
-                sender.sendMessage(ChatColor.RED + "error: 不明なコマンドです");
+                sender.sendMessage(ChatColor.RED + "usage: \n/aliveonwood <" + CMD_START + " | " + CMD_STOP + ">");
                 break;
         }
 
@@ -79,13 +79,10 @@ public final class OnlyAliveOnWood extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
-        if (!isEnabled()) {
-            return;
-        }
-
         Player player = e.getPlayer();
         Location loc = player.getLocation();
         loc.setY(loc.getY() - RELATIVE_Y);
+
         if (isAliveBlock(loc.getBlock().getType())) {
             return;
         }
@@ -93,6 +90,11 @@ public final class OnlyAliveOnWood extends JavaPlugin implements Listener {
         player.setHealth(HP);
     }
 
+    /**
+     * 生存可能なブロックであるかどうか判定する
+     * @param material 判定対象のブロック
+     * @return boolean true:生存可能, false:生存不可
+     */
     public boolean isAliveBlock(Material material) {
         if (
             // 水・マグマ・空気
