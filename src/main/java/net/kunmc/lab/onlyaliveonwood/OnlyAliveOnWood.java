@@ -1,8 +1,10 @@
 package net.kunmc.lab.onlyaliveonwood;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -24,7 +26,7 @@ public final class OnlyAliveOnWood extends JavaPlugin implements Listener {
     private final static String CMD_START = "start";
     private final static String CMD_STOP = "stop";
 
-    private final static double HP = 0.0d;
+    private final static double HP = 20.0d;
     private final static int RELATIVE_Y = 1;
 
 
@@ -80,27 +82,39 @@ public final class OnlyAliveOnWood extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
         Player player = e.getPlayer();
-        Location loc = player.getLocation();
-        loc.setY(loc.getY() - RELATIVE_Y);
 
-        if (isAliveBlock(loc.getBlock().getType())) {
+        if(GameMode.SPECTATOR.equals(player.getGameMode())) {
+            return;
+        }
+        if(!player.isOnGround()) {
             return;
         }
 
-        player.setHealth(HP);
+        Location loc = player.getLocation();
+        loc.setY(loc.getY() - RELATIVE_Y);
+
+        if (isAliveBlock(loc.getBlock())) {
+            return;
+        }
+
+        player.damage(HP);
     }
 
     /**
      * 生存可能なブロックであるかどうか判定する
-     * @param material 判定対象のブロック
+     * @param block 判定対象のブロック
      * @return boolean true:生存可能, false:生存不可
      */
-    public boolean isAliveBlock(Material material) {
+    public boolean isAliveBlock(Block block) {
+        if(block.isLiquid()){
+            // 水・溶岩
+            return true;
+        }
+
+        Material material = block.getType();
         if (
-            // 水・マグマ・空気
-            Material.WATER.equals(material)
-            || Material.MAGMA_BLOCK.equals(material)
-            || Material.AIR.equals(material)
+            // 空気
+             Material.AIR.equals(material)
             || Material.CAVE_AIR.equals(material)
             || Material.VOID_AIR.equals(material)
             // 板材
@@ -119,6 +133,24 @@ public final class OnlyAliveOnWood extends JavaPlugin implements Listener {
             || Material.JUNGLE_LOG.equals(material)
             || Material.ACACIA_LOG.equals(material)
             || Material.DARK_OAK_LOG.equals(material)
+            // 半ブロック
+            || Material.OAK_SLAB.equals(material)
+            || Material.SPRUCE_SLAB.equals(material)
+            || Material.BIRCH_SLAB.equals(material)
+            || Material.JUNGLE_SLAB.equals(material)
+            || Material.ACACIA_SLAB.equals(material)
+            || Material.DARK_OAK_SLAB.equals(material)
+            || Material.CRIMSON_SLAB.equals(material)
+            || Material.WARPED_SLAB.equals(material)
+            // 階段ブロック
+            || Material.OAK_STAIRS.equals(material)
+            || Material.SPRUCE_STAIRS.equals(material)
+            || Material.BIRCH_STAIRS.equals(material)
+            || Material.JUNGLE_STAIRS.equals(material)
+            || Material.ACACIA_STAIRS.equals(material)
+            || Material.DARK_OAK_STAIRS.equals(material)
+            || Material.CRIMSON_STAIRS.equals(material)
+            || Material.WARPED_STAIRS.equals(material)
         ) {
             return true;
         }
